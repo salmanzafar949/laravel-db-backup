@@ -1,0 +1,46 @@
+{
+    "name": "salmanzafar/laravel-db-backup",
+    "description": "A laravel 5 and laravel 6 package lets you create database backup with a single command.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Salman Zafar",
+            "email": "salmanzafar949@gmail.com"
+        }
+    ],
+    "keywords": [
+        "laravel",
+        "laravel5",
+        "laravel-5",
+        "laravel6",
+        "laravel-6",
+        "laravel-db-backup",
+        "laravel-database-backup",
+        "laravel backup",
+        "laravel mysql backup"
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "require-dev": {
+        "laravel/framework": ">=5.5"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Salman\\DbBackup\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Salman\\DbBackup\\DbBackupServiceProvider"
+            ],
+            "aliases": {
+                "CrudGenerator": "Salman\\DbBackup\\Facades\\DbBackup"
+            }
+        }
+    }
+}
