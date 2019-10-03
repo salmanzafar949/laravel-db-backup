@@ -3,6 +3,7 @@
 namespace Salman\DbBackup;
 
 use Illuminate\Support\ServiceProvider;
+use Salman\DbBackup\Commands\Backup;
 
 class DbBackupServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,9 @@ class DbBackupServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        $this->commands([
+            Backup::class
+        ]);
     }
 
     /**
@@ -23,6 +26,14 @@ class DbBackupServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->LoadAndMergeConfig();
+    }
 
+    public function LoadAndMergeConfig()
+    {
+        $this->mergeConfigFrom(__DIR__.'/config/dbbackup.php','dbbackup');
+        $this->publishes([
+            __DIR__.'/config/dbbackup.php' => config_path('dbbackup.php'),
+        ]);
     }
 }

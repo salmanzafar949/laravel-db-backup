@@ -19,14 +19,16 @@ class DbBackupService
     private static $process = null;
     private static $visibility = null;
 
-    public function __construct()
+    public static function KickStartBackup()
     {
         self::$db = env('DB_DATABASE');
         self::$db_user = env('DB_USERNAME');
         self::$db_Pass = env('DB_PASSWORD');
         self::$disk = config('dbbackup.disk');
-        self::$folder = config('dbbackup.folder_name');
+        self::$folder = config('dbbackup.folder');
         self::$visibility = config('dbbackup.visibility');
+        $output  = self::DoBackUp();
+        return $output;
     }
 
     private static function StoreBackupOnS3($path)
@@ -40,7 +42,7 @@ class DbBackupService
         return true;
     }
 
-    public static function DoBackUp()
+    private static function DoBackUp()
     {
         self::$process = new Process(self::RunBackupProcess());
 
@@ -58,24 +60,29 @@ class DbBackupService
 
     private static function RunBackupProcess()
     {
-        $filename = self::$folder."/".self::GetBackupFileName();
 
         $exec  = sprintf(
             'mysqldump --compact --skip-comments -u%s -p%s %s > %s',
             self::$db_user,
             self::$db_Pass,
             self::$db,
-            Storage::disk(self::$disk)->put($filename, fopen(storage_path($filename), 'r+', self::$visibility))
+            storage_path(self::GetBackupFileNameAndPath())
+//            Storage::disk(self::$disk)->put($filename, fopen(storage_path($filename), 'r+', self::$visibility))
         );
 //        self::$disk == 's3' ?? self::StoreBackupOnS3($filename);
 
         return $exec;
     }
 
-    private static function GetBackupFileName()
+    private static function GetBackupFileNameAndPath()
     {
-        $today = today()->format('Y-M-D');
+        if (!is_dir(self::$folder))
+            mkdir(storage_path(self::$folder), 0777);
 
-        return (string) Str::uuid().'_'.$today.'sql';
+        $today = today()->format('Y-M-D');
+        $name = (string) Str::uuid().'_'.$today.'.sql';
+        $path = self::$folder.'/'.$name;
+
+        return $path;
     }
 }
