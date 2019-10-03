@@ -11,12 +11,13 @@ use Symfony\Component\Process\Process;
 
 class DbBackupService
 {
-    protected static $db = null;
-    protected static $db_user = null;
-    protected static $db_Pass = null;
-    protected static $disk = null;
-    protected static $folder = null;
-    protected static $process = null;
+    private static $db = null;
+    private static $db_user = null;
+    private static $db_Pass = null;
+    private static $disk = null;
+    private static $folder = null;
+    private static $process = null;
+    private static $visibility = null;
 
     public function __construct()
     {
@@ -25,23 +26,19 @@ class DbBackupService
         self::$db_Pass = env('DB_PASSWORD');
         self::$disk = config('dbbackup.disk');
         self::$folder = config('dbbackup.folder_name');
+        self::$visibility = config('dbbackup.visibility');
     }
 
-    /*public static function StoreBackup()
+    private static function StoreBackupOnS3($path)
     {
-        switch (self::$disk)
-        {
-            case 's3':
-                self::DoBackUp('s3');
-                break;
-            case 'local':
-                self::DoBackUp('local');
-                break;
-            default:
-                return null;
-        }
+        $content = Storage::get($path);
 
-    }*/
+        Storage::disk('s3')->put($path, $content);
+
+        Storage::delete($path);
+
+        return true;
+    }
 
     public static function DoBackUp()
     {
@@ -59,20 +56,23 @@ class DbBackupService
         }
     }
 
-    protected static function RunBackupProcess()
+    private static function RunBackupProcess()
     {
+        $filename = self::$folder."/".self::GetBackupFileName();
+
         $exec  = sprintf(
             'mysqldump --compact --skip-comments -u%s -p%s %s > %s',
             self::$db_user,
             self::$db_Pass,
             self::$db,
-            storage_path(self::$folder."/".self::GetBackupFileName())
+            Storage::disk(self::$disk)->put($filename, fopen(storage_path($filename), 'r+', self::$visibility))
         );
+//        self::$disk == 's3' ?? self::StoreBackupOnS3($filename);
 
         return $exec;
     }
 
-    protected static function GetBackupFileName()
+    private static function GetBackupFileName()
     {
         $today = today()->format('Y-M-D');
 

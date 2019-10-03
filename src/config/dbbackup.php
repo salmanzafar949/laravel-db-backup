@@ -6,5 +6,6 @@
 
 return [
     'disk' => 'local',
+    'visibility' => 'public', // leave it null for private
     'folder_name' => 'dbbackup'
 ];
