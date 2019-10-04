@@ -1,4 +1,4 @@
-# Laravel CRUD Generator
+# Laravel Database Backup
 
 A Laravel 5 and Laravel 6 library that creates backup of your database with a single command
 
