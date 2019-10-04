@@ -34,9 +34,9 @@ php artisan vendor:publish --provider="Salman\DbBackup\DbBackupServiceProvider"
  */
 
 return [
-    'disk' => 'public',
+    'disk' => 'public', // disk e.g local, public, s3 etc
     'visibility' => 'public', // leave it null for private
-    'folder' => 'dbbackup'
+    'folder' => 'dbbackup' // folder name for backup
 ];
 ```
 ## Usage
