@@ -9,7 +9,7 @@ composer require salmanzafar/laravel-db-backup
 ## Features
 
 * Easy configuration db backup in a single command
-* Storage Customization (e.g s3(s3 support is in development), local etc)
+* Storage Customization (e.g s3 (s3 support is in development), local etc)
 * Email about DbBackup completion (in development).
 
 ## Enable the package (Optional)
