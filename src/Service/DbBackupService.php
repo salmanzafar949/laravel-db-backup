@@ -3,8 +3,6 @@
 
 namespace Salman\DbBackup\Service;
 
-
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -31,16 +29,18 @@ class DbBackupService
         return $output;
     }
 
-    private static function StoreBackupOnS3($path)
+/*    private static function StoreBackupOnS3($path)
     {
-        $content = Storage::get($path);
+        $F_path = storage_path($path);
+
+        $content = Storage::get($F_path);
 
         Storage::disk('s3')->put($path, $content);
 
         Storage::delete($path);
 
         return true;
-    }
+    }*/
 
     private static function DoBackUp()
     {
@@ -73,14 +73,12 @@ class DbBackupService
             storage_path($path)
         );
 
-        self::$disk == 's3' ?? self::StoreBackupOnS3($filename);
-
         return $exec;
     }
 
     private static function GetBackupFileNameAndPath()
     {
-        if (!is_dir(storage_path(self::$folder)))
+        if (!is_dir(storage_path(self::$folder)) && self::$disk != 's3')
             mkdir(storage_path(self::$folder), 0777);
 
         $today = today()->format('Y-M-D');
