@@ -44,7 +44,9 @@ class DbBackupService
 
     private static function DoBackUp()
     {
-        self::$process = new Process(self::RunBackupProcess());
+        $command = self::RunBackupProcess();
+
+        self::$process = new Process($command);
 
         try
         {
@@ -61,22 +63,24 @@ class DbBackupService
     private static function RunBackupProcess()
     {
 
+        $path = self::GetBackupFileNameAndPath();
+
         $exec  = sprintf(
-            'mysqldump --compact --skip-comments -u%s -p%s %s > %s',
+            'mysqldump --compact -u%s -p%s %s > %s',
             self::$db_user,
             self::$db_Pass,
             self::$db,
-            storage_path(self::GetBackupFileNameAndPath())
-//            Storage::disk(self::$disk)->put($filename, fopen(storage_path($filename), 'r+', self::$visibility))
+            storage_path($path)
         );
-//        self::$disk == 's3' ?? self::StoreBackupOnS3($filename);
+
+        self::$disk == 's3' ?? self::StoreBackupOnS3($filename);
 
         return $exec;
     }
 
     private static function GetBackupFileNameAndPath()
     {
-        if (!is_dir(self::$folder))
+        if (!is_dir(storage_path(self::$folder)))
             mkdir(storage_path(self::$folder), 0777);
 
         $today = today()->format('Y-M-D');
