@@ -7,5 +7,6 @@
 return [
     'disk' => 'local',
     'visibility' => 'public', // leave it null for private
-    'folder' => 'dbbackup'
+    'folder' => 'dbbackup',
+    'email' => null, //Enter your email here to get emails for dbbackup
 ];
